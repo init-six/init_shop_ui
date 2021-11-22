@@ -1,8 +1,8 @@
 VERSION := $(shell git describe --tags --always --dirty)
-REGISTRY := evanfordocker/init_front
+REGISTRY := evanfordocker/init-web-server
 
 image:
-	docker build -t $(REGISTRY):$(VERSION) .
+	docker build -t $(REGISTRY):$(VERSION) -t $(REGISTRY):latest .
 
 push:
 	docker image push $(REGISTRY):$(VERSION)
