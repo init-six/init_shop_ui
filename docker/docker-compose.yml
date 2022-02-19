@@ -17,7 +17,7 @@ services:
     container_name: init-web-server
     image: nginx:alpine
     volumes:
-      - ../build:/usr/share/nginx/html
+      - ../dist:/usr/share/nginx/html
     restart: always
 
   nginx:
