@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  init-api-server:
+    image: evanfordocker/init-api-server:latest
+    restart: always
+    container_name: init-api-server
+    depends_on:
+      - db
+    ports:
+      - "9096:9096"
+    environment:
+      - ENV=dev
+      - TRIGGER=1
+
+  init-web-server:
+    container_name: init-web-server
+    image: nginx:alpine
+    volumes:
+      - ../build:/usr/share/nginx/html
+    restart: always
+
+  nginx:
+    image: evanfordocker/init-nginx:latest
+    restart: always
+    ports:
+      - "443:443"
+      - "80:80"
+    logging:
+      driver: json-file
+
+  db:
+    image: "postgres:11"
+    container_name: postgres_db
+    ports:
+      - "54320:5432"
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+    #  - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSOWRD=postgres
+      - POSTGRES_DB=init-shop
