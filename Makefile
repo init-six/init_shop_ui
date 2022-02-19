@@ -1,4 +1,4 @@
-VERSION := $(shell git describe --tags --always --dirty)
+VERSION := $(shell git describe --always)
 REGISTRY := evanfordocker/init-web-server
 
 image:
