@@ -2,6 +2,8 @@ VERSION := $(shell git describe --tags --always --dirty)
 REGISTRY := evanfordocker/init-web-server
 
 image:
+	rm -r dist
+	npm run prod
 	docker build -t $(REGISTRY):$(VERSION) -t $(REGISTRY):latest .
 
 push:
