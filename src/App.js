@@ -1,9 +1,8 @@
-import React from 'react';
+import React,{Component} from 'react';
+import {Button} from 'antd';
 
-export function App(){
-  return(
-    <div>
-      <h1>Welcome {new Date().toString()}</h1>
-    </div>
-  );
+export default class App extends Component{
+  render(){
+    return <Button type="primary"> Primary</Button>
+  }
 }
