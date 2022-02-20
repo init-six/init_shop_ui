@@ -10,11 +10,16 @@ module.exports={
     filename:'index.bundle.js',
   },
 
+  resolve: {
+    extensions: ['.js', '.tsx', '.jsx']
+  },
+
   module:{
     rules:[
       {
         test: /\.(j|t)s[x]?$/,
         exclude:/node_modules/,
+        include:path.resolve('src'),
         use:{
           loader:'babel-loader'
         }
@@ -29,6 +34,11 @@ module.exports={
             loader:"css-loader"
           }
         ]
+      },
+
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       },
 
       {
