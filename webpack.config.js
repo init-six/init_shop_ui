@@ -30,22 +30,31 @@ module.exports={
           }
         ]
       },
+
       {
-        test: /\.less$/,
-        use: [{
-            loader: 'style-loader' // creates style nodes from JS strings
-        },
-        {
-            loader: 'css-loader' // translates CSS into CommonJ
-        },
-        {
-            loader: 'less-loader', // compiles Less to CSS
-            options: {
-                javascriptEnabled: true
-            }
-        }]
+        test: /\.less$/i,
+        use: [
+          {
+              loader: 'style-loader',
+          },
+          {
+              loader: 'css-loader',
+          },
+          {
+              loader: 'less-loader', // compiles Less to CSS
+              options: {
+                lessOptions: { 
+                  modifyVars: { 
+                    'primary-color': '#1DA57A',
+                    'link-color': '#1DA57A',
+                  },
+                  javascriptEnabled: true,
+               },
+              },
+          },
+        ],
       },
-    ]
+    ],
   },
 
   devServer: {
@@ -54,6 +63,4 @@ module.exports={
         index: '/index.html'
     }
   },
-
-  devtool: "source-map"
 };
