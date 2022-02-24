@@ -1,5 +1,5 @@
 import React,{Component} from 'react'
-import {BrowserRouter,Route,Routes} from 'react-router-dom'
+import {Switch,Router,BrowserRouter,Route,Routes} from 'react-router-dom'
 import Login from './pages/login/login'
 import Admin from './pages/admin/admin'
 
@@ -9,7 +9,7 @@ export default class App extends Component{
       <BrowserRouter>
         <Routes>
           <Route path='/login' element={<Login/>}/>
-          <Route path='/' element={<Admin/>}/>
+          <Route path='/admin' element={<Admin/>}/>
         </Routes>
       </BrowserRouter>
     ) 
