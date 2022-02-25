@@ -26,6 +26,7 @@ export default function Router(){
           {path:'order',element:<Order/>},
           {path:'product',element:<Product/>},
           {path:'user',element:<User/>},
+          {path:'*',element:<Home />}
         ]
       },
       //redirect {path:"home",redirectTo:'/'} 

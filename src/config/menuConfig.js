@@ -21,7 +21,7 @@ const menuList=[
   },
   {
     title:'Shop',
-    path:'/',
+    path:'/shop',
     key:'2',
     icon: <AppstoreOutlined/>,
     children:[
@@ -53,7 +53,7 @@ const menuList=[
   },
   {
     title:'Chart',
-    path:'/',
+    path:'/chart',
     key:'7',
     icon: <BarChartOutlined/>,
     children:[
