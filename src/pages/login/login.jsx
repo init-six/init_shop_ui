@@ -2,9 +2,12 @@ import React,{Component} from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import "./login.less";
-import logo from "./images/init_logo.jpg";
+import logo from "../../assets/images/init_logo.jpg";
 import {reqLogin,reqRegister} from '../../api';
 import {useNavigate} from 'react-router-dom';
+import {saveAccessToken,saveAccessUser,getAccessToken} from '../../utils/storage';
+import memoryUtils from '../../utils/memoryUtils'
+import {Navigate} from 'react-router-dom'
 
 const Item = Form.Item 
 
@@ -17,9 +20,21 @@ export default function Login(){
         const {email,password}=values
         const response = await reqLogin(email,password)
         //redirect to admin page
-        console.log('success:',response)
+        memoryUtils.user={
+            email:response.data.email,
+            role:response.data.role,
+            username:response.data.userName,
+            uuid:response.data.uuid,
+            telnumber:response.data.telNumber
+        }
+        saveAccessUser(memoryUtils.user)
+        saveAccessToken(response.data.token)
         history('/admin')
     };
+
+    if (getAccessToken()){
+        return <Navigate to='/admin'/>
+    }
 
     return(
         <div className="login">
