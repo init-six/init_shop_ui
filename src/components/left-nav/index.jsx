@@ -9,6 +9,9 @@ const {Sider} = Layout;
 const { SubMenu } = Menu;
 
 export default function LeftNav(){
+    var openKey="";
+
+    const path=useLocation().pathname;
 
     const [collapsed,setCollapsed]=useState(false);
 
@@ -23,6 +26,10 @@ export default function LeftNav(){
                     </Menu.Item>
                 )
             }else{
+                const cItem=item.children.find(cItem=>cItem.path==path)
+                if (cItem){
+                    openKey=item.path
+                }
                 return(
                     <SubMenu icon={item.icon} title={item.title} key={item.path}>
                         {
@@ -38,7 +45,8 @@ export default function LeftNav(){
         setCollapsed(!collapsed);
     };
 
-    const path=useLocation().pathname;
+    const menuNodes=getMenuNodes(menuList)
+
     return(
         <Sider collapsible collapsed={collapsed} onCollapse={onCollapse} >
         <Link to='/admin' className="left-nav">
@@ -49,10 +57,11 @@ export default function LeftNav(){
         </Link>
         <Menu
           defaultSelectedKeys={[path]}
+          defaultOpenKeys={[openKey]}
           mode="inline"
           theme="dark"
         >
-          {getMenuNodes(menuList)}
+          {menuNodes}
         </Menu>
         </Sider>
     )

@@ -20,7 +20,7 @@ export default class Admin extends Component{
               <LeftNav/>
               <Layout>
                 <Header/>
-                <Content style={{backgroundColor:'#fff'}}>
+                  <Content style={{margin:20,backgroundColor:'#fff'}}>
                     <Outlet />
                 </Content>
                 <Footer style={{textAlign:'center',color:'#aaa'}}>©2022 init shop. All Rights Reserved.</Footer>
