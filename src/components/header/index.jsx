@@ -11,7 +11,6 @@ import LinkButton from '../../components/link-button'
 
 export default function Header(){
     const [currentTime,setCurrentTime]=useState(formateDate(Date.now()))
-    const [visible,setVisible]=useState(false)
     const getTitle=()=>{
         const path=useLocation().pathname
         let title
