@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+import React from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import "./login.less";
@@ -12,8 +12,6 @@ import {Navigate} from 'react-router-dom'
 const Item = Form.Item 
 
 export default function Login(){
-
-
     const history = useNavigate();
 
     const handleFormSubmit=async (values)=>{
