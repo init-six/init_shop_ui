@@ -7,7 +7,10 @@ import {reqCategories,
         reqThirdCategories,
         reqUpdateCategory,
         reqUpdateSecCategory,
-        reqUpdateThirdCategory} from '../../api'
+        reqUpdateThirdCategory,
+        reqAddCategory,
+        reqAddSecCategory,
+        reqAddThirdCategory} from '../../api'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
 import {message} from 'antd'
@@ -130,28 +133,29 @@ export default function Category(){
             setActIdList(newParentIdList)
             setShowModalStatus(2)
         }
-        const addCategory=()=>{
-            console.log("add")
+        const addCategory=async ()=>{
+            setShowModalStatus(0)
+            const newName=form.getFieldValue('categoryName')
+            if (parentIdList.length==0){
+                await reqAddCategory(newName)
+            }else if (parentIdList.length==1){
+                await reqAddSecCategory(newName,parentIdList[0])
+            }else{
+                await reqAddThirdCategory(newName,parentIdList[1])
+            }
+            form.resetFields()
+            getCategories()
         }
         const updateCategory=async ()=>{
             setActCategory("")
             setActIdList([])
             setShowModalStatus(0)
             if (actIdList.length==1){
-                const result=await reqUpdateCategory(form.getFieldValue('categoryName'),actIdList[0])
-                if (result.status!=204){
-                    message.error(result.status)
-                }
+                await reqUpdateCategory(form.getFieldValue('categoryName'),actIdList[0])
             }else if (actIdList.length==2){
-                const result=await reqUpdateSecCategory(form.getFieldValue('categoryName'),actIdList[0],actIdList[1])
-                if (result.status!=204){
-                    message.error(result.status)
-                }
+                await reqUpdateSecCategory(form.getFieldValue('categoryName'),actIdList[0],actIdList[1])
             }else if (actIdList.length==3){
-                const result=await reqUpdateThirdCategory(form.getFieldValue('categoryName'),actIdList[1],actIdList[2])
-                if (result.status!=204){
-                    message.error(result.status)
-                }
+                await reqUpdateThirdCategory(form.getFieldValue('categoryName'),actIdList[1],actIdList[2])
             }
             form.resetFields()
             getCategories()
@@ -171,7 +175,7 @@ export default function Category(){
                 pagination={{defaultCurrent:1,showQuickJumper:true,defaultPageSize:10}}
                 />
                 <Modal title="Add Category" visible={showModalStatus==1} onOk={addCategory} onCancel={handleModalCancel}>
-                    <AddForm/>
+                    <AddForm navCategory={navCategory} form={form}/>
                 </Modal>
                 <Modal title="Update Category" visible={showModalStatus==2} onOk={updateCategory} onCancel={handleModalCancel}>
                     <UpdateForm categoryName={actCategory} form={form}/>
