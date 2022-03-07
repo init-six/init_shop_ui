@@ -1,22 +1,20 @@
 import React from 'react'
-import {Form,Select,Input} from 'antd'
+import {Typography,Form,Select,Input,Cascader} from 'antd'
+
+const {Text}=Typography
 
 const Item=Form.Item
 
 const Option=Select.Option
 
-export default function AddForm(){
+export default function AddForm(props){
+    const navCategory=props.navCategory
+    const nav=navCategory==""?"Default Category":navCategory.join("/")
     return(
-        <Form>
-            <Item>
-            <Select defaultValue="0">
-                <Option value='0'>A</Option>
-                <Option value='1'>B</Option>
-                <Option value='2'>C</Option>
-            </Select>
-            </Item>
-            <Item>
-            <Input placeholder='Input Category Name'/>
+        <Form form={props.form}>
+            <Text>{nav}</Text>
+            <Item name="categoryName">
+                <Input placeholder='Input Category Name'/>
             </Item>
         </Form>
     )

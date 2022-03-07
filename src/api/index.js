@@ -15,6 +15,10 @@ export const reqCategories=()=>authajax('/api/categories')
 
 export const reqAddCategory=(name)=>authajax('/api/categories',{name},'POST')
 
+export const reqAddSecCategory=(name,categoryID)=>authajax(`/api/category/${categoryID}/sec_categories`,{name},'POST') 
+
+export const reqAddThirdCategory=(name,secCategoryID)=>authajax(`/api/sec_categories/${secCategoryID}/third_categories`,{name},'POST') 
+
 export const reqUpdateCategory=(name,categoryID)=>authajax(`/api/categories/${categoryID}`,{name},'PUT')
 
 export const reqUpdateSecCategory=(name,categoryID,secCategoryID)=>authajax(`/api/category/${categoryID}/sec_categories/${secCategoryID}`,{name},'PUT')
