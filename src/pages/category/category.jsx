@@ -134,31 +134,40 @@ export default function Category(){
             setShowModalStatus(2)
         }
         const addCategory=async ()=>{
-            setShowModalStatus(0)
-            const newName=form.getFieldValue('categoryName')
-            if (parentIdList.length==0){
-                await reqAddCategory(newName)
-            }else if (parentIdList.length==1){
-                await reqAddSecCategory(newName,parentIdList[0])
-            }else{
-                await reqAddThirdCategory(newName,parentIdList[1])
+            try{
+                const values=await form.validateFields()
+                const {categoryName}=values
+                setShowModalStatus(0)
+                if (parentIdList.length==0){
+                    await reqAddCategory(categoryName)
+                }else if (parentIdList.length==1){
+                    await reqAddSecCategory(categoryName,parentIdList[0])
+                }else{
+                    await reqAddThirdCategory(categoryName,parentIdList[1])
+                }
+                form.resetFields()
+                getCategories()
+            }catch(error){
             }
-            form.resetFields()
-            getCategories()
         }
         const updateCategory=async ()=>{
-            setActCategory("")
-            setActIdList([])
-            setShowModalStatus(0)
-            if (actIdList.length==1){
-                await reqUpdateCategory(form.getFieldValue('categoryName'),actIdList[0])
-            }else if (actIdList.length==2){
-                await reqUpdateSecCategory(form.getFieldValue('categoryName'),actIdList[0],actIdList[1])
-            }else if (actIdList.length==3){
-                await reqUpdateThirdCategory(form.getFieldValue('categoryName'),actIdList[1],actIdList[2])
+            try{
+                const values=await form.validateFields()
+                const {categoryName}=values
+                setActCategory("")
+                setActIdList([])
+                setShowModalStatus(0)
+                if (actIdList.length==1){
+                    await reqUpdateCategory(categoryName,actIdList[0])
+                }else if (actIdList.length==2){
+                    await reqUpdateSecCategory(categoryName,actIdList[0],actIdList[1])
+                }else if (actIdList.length==3){
+                    await reqUpdateThirdCategory(categoryName,actIdList[1],actIdList[2])
+                }
+                form.resetFields()
+                getCategories()
+            }catch(error){
             }
-            form.resetFields()
-            getCategories()
         }
         const handleModalCancel=()=>{
             setActCategory("")

@@ -13,7 +13,10 @@ export default function AddForm(props){
     return(
         <Form form={props.form}>
             <Text>{nav}</Text>
-            <Item name="categoryName">
+            <Item 
+                name="categoryName"
+                rules={[{ required: true, message: 'Please input category name!' }]}
+            >
                 <Input placeholder='Input Category Name'/>
             </Item>
         </Form>

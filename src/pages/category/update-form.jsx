@@ -17,7 +17,10 @@ export default function UpdateForm(props){
 
     return(
         <Form form={props.form}>
-            <Item name="categoryName">
+            <Item 
+                name="categoryName"
+                rules={[{ required: true, message: 'Please input category name!' }]}
+            >
                 <Input placeholder='Input Category Name'/>
             </Item>
         </Form>
