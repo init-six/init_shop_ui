@@ -1,65 +1,91 @@
 import React,{useEffect,useState} from 'react'
 import {Card,Select,Input,Button,Icon,Table} from 'antd'
 import {PlusOutlined} from '@ant-design/icons';
+import {reqSpus} from '../../api'
+import LinkButton from '../../components/link-button'
 
 const Option=Select.Option
 
 export default function ProductHome(){
     const [columns,setColumns]=useState([])
+    const [spus,setSpus]=useState([])
+    const [searchName,setSearchName]=useState("")
+    const [searchType,setSearchType]=useState("searchbyname")
 
-    const dataSource = [
-      {
-        key: '1',
-        name: 'Mike',
-        age: 32,
-        address: '10 Downing Street',
-      },
-      {
-        key: '2',
-        name: 'John',
-        age: 42,
-        address: '10 Downing Street',
-      },
-    ];
-    
+    const getSpus=async()=>{
+        var searchTypeValue="",searchNameValue=""
+        if (searchName){
+            searchTypeValue=searchType
+            searchNameValue=searchName
+        }
+        const result=await reqSpus(searchTypeValue,searchNameValue)
+        result.data.forEach(item=>{
+            item['description']=item.spuDetail.description
+        })
+        setSpus(result.data)
+    }
+
+    useEffect(()=>{
+        initColumns()
+        getSpus()
+    },[])
 
     const initColumns=()=>{
         const columns = [
           {
-            title: 'Product Name(SPU)',
+            title: 'Product Name',
             dataIndex: 'name',
-            key: 'name',
+            width:250,
           },
           {
             title: 'Description',
-            dataIndex: 'age',
-            key: 'age',
+            dataIndex: 'description',
           },
           {
             title: 'Status',
-            dataIndex: 'address',
-            key: 'address',
+            dataIndex: 'saleable',
+            width:200,
+            render:(status)=>{
+                return(
+                  <span>
+                      <Button type='primary'>Off Shore</Button>
+                      <span>On Shore</span>
+                  </span>
+                )
+            }
           },
           {
             title: 'Action',
-            dataIndex: 'address',
-            key: 'address',
+            dataIndex: '',
+            width:200,
+            render:(status)=>{
+                return(
+                  <span>
+                      <LinkButton>Details</LinkButton>
+                      <LinkButton>Edit</LinkButton>
+                  </span>
+                )
+            }
           },
         ];
         setColumns(columns)
     }
 
-    useEffect(()=>{
-        initColumns()
-    },[])
     const title=(
         <span>
-            <Select value='0'>
-                <Option value='0'>Search By Name</Option>
-                <Option value='1'>Search By Details</Option>
+            <Select value={searchType} onChange={value=>setSearchType(value)}>
+                <Option value='searchbyname'>Search By Name</Option>
+                <Option value='searchbydes'>Search By Details</Option>
             </Select>
-            <Input placeholder="keywords" style={{width:150,margin:'0 10px'}}/>
-            <Button type='primary'>Search</Button>
+            <Input placeholder="keywords" 
+                style={{width:150,margin:'0 10px'}} 
+                value={searchName}
+                onChange={event=>setSearchName(event.target.value)}
+            />
+            <Button 
+                type='primary'
+                onClick={()=>getSpus()}
+            >Search</Button>
         </span>
     )
 
@@ -72,7 +98,9 @@ export default function ProductHome(){
     return(
         <Card title={title} extra={extra}>
             <Table 
-                dataSource={dataSource}
+                rowKey='uuid'
+                bordered
+                dataSource={spus}
                 columns={columns}
             />
         </Card>

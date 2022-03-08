@@ -3,14 +3,12 @@
  */
 import authajax from './ajax'
 
-//export const reqReadCategories=()=>ajax('/api/categories')
-
-//export const reqCreateCategory=(data)=>ajax('/api/categories',data,'POST')
-
+//users
 export const reqLogin=(email,password)=>authajax('/api/user/login',{email,password},'POST')
 
 export const reqRegister=(user)=>authajax('/api/user/register',user,'POST')
 
+//category
 export const reqCategories=()=>authajax('/api/categories')
 
 export const reqAddCategory=(name)=>authajax('/api/categories',{name},'POST')
@@ -28,3 +26,8 @@ export const reqUpdateThirdCategory=(name,secCategoryID,thirdCategoryID)=>authaj
 export const reqSecCategories=(categoryID)=>authajax(`/api/categories/${categoryID}`)
 
 export const reqThirdCategories=(categoryID,secCategoryID)=>authajax(`/api/category/${categoryID}/sec_categories/${secCategoryID}`)
+
+//spu
+export const reqSpus=(searchType,searchName)=>authajax('/api/spus',{
+  [searchType]:searchName,
+})
