@@ -31,3 +31,5 @@ export const reqThirdCategories=(categoryID,secCategoryID)=>authajax(`/api/categ
 export const reqSpus=(searchType,searchName)=>authajax('/api/spus',{
   [searchType]:searchName,
 })
+export const reqAddSpu=(data)=>authajax('/api/spus',data,'POST')
+
