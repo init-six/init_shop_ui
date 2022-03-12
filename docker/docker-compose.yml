@@ -24,14 +24,14 @@ services:
     image: evanfordocker/init-nginx:latest
     restart: always
     ports:
-      - "443:443"
+      - "4430:443"
       - "80:80"
     logging:
       driver: json-file
 
   db:
     image: "postgres:11"
-    container_name: postgres_db
+    container_name: init_db
     ports:
       - "54320:5432"
     volumes:
