@@ -16,7 +16,8 @@ import {PlusOutlined,MinusCircleOutlined} from '@ant-design/icons';
 import {
         reqCategories,
         reqSecCategories,
-        reqThirdCategories
+        reqThirdCategories,
+        reqReadSpu
         } from '../../api'
 
 const Item=Form.Item;
@@ -43,6 +44,7 @@ const formItemLayout = {
 };
 
 export default function SpuEditForm(props){
+    const {uuid,form}=props
     const children = [];
     const [ct1,setCt1]=useState("")
     const [ct2,setCt2]=useState("")
@@ -58,10 +60,21 @@ export default function SpuEditForm(props){
         })
         setCategories(list)
     }
-    useEffect(()=>{getCategories()},[])
+    const getSpu=async()=>{
+        if (uuid!=""){
+            console.log("edit/intialvalues")
+            let result = await reqReadSpu(uuid)
+            console.log(result.data)
+        }
+    }
+
+    useEffect(()=>{
+        getCategories()
+        getSpu()
+    },[uuid])
     const handleCategoryChange=async(key)=>{
         if (ct1!=key){
-            props.form.resetFields(['ct2','ct3'])
+            form.resetFields(['ct2','ct3'])
             setSecCategories([])
             setThirdCategories([])
         }
@@ -75,7 +88,7 @@ export default function SpuEditForm(props){
     }
     const handleSecCategoryChange=async(key)=>{
         if (ct2!=key){
-            props.form.resetFields(['ct3'])
+            form.resetFields(['ct3'])
             setThirdCategories([])
         }
         setCt2(key)
@@ -89,7 +102,7 @@ export default function SpuEditForm(props){
     return (
       <Form 
         {...formItemLayout}
-        form={props.form} 
+        form={form} 
         name="editspu" 
         scrollToFirstError
         initialValues={{valid:true,saleable:true}}

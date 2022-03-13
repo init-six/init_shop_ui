@@ -1,22 +1,23 @@
 import React,{useEffect,useState} from 'react'
-import {Form,Card,Select,Input,Button,Icon,Table,Drawer,Space} from 'antd'
-import {PlusOutlined} from '@ant-design/icons';
+import {Form,Card,Select,Input,Button,Icon,Table,Drawer,Space,PageHeader,Descriptions} from 'antd'
+import {PlusOutlined,SearchOutlined,EditOutlined} from '@ant-design/icons';
 import {reqSpus} from '../../api'
 import LinkButton from '../../components/link-button'
 import moment from 'moment';
 import {Link} from 'react-router-dom';
 import SpuEditForm from './spu-edit-form'
-import {reqAddSpu} from './../../api'
+import {reqAddSpu,reqUpdateSpu} from './../../api'
 
 const Option=Select.Option
 const dateFormat='YYYY-MM-DD h:mm:ss a';
 
 export default function ProductHome(){
-    const [columns,setColumns]=useState([])
-    const [spus,setSpus]=useState([])
-    const [searchName,setSearchName]=useState("")
-    const [searchType,setSearchType]=useState("searchbyname")
+    const [columns,setColumns]=useState([]);
+    const [spus,setSpus]=useState([]);
+    const [searchName,setSearchName]=useState("");
+    const [searchType,setSearchType]=useState("searchbyname");
     const [spuEditVisible,setSpuEditVisible]=useState(false);
+    const [editSpuUUID,setEditSpuUUID]=useState("");
     const [form]=Form.useForm()
 
     const getSpus=async()=>{
@@ -27,8 +28,22 @@ export default function ProductHome(){
         }
         const result=await reqSpus(searchTypeValue,searchNameValue)
         result.data.forEach(item=>{
+            let navlist=[]
+            let first=item['firstCategory']
+            let sec=item['secCategory']
+            let trd=item['thirdCategory']
+            if (first!=null){
+                navlist.push(first)
+            }
+            if (sec!=null){
+                navlist.push(sec)
+            }
+            if (trd!=null){
+                navlist.push(trd)
+            }
             item['description']=item.spuDetail.description
             item['sku_nums']=item.skus.length
+            item['category']=navlist.join(' / ')
         })
         setSpus(result.data)
     }
@@ -46,13 +61,13 @@ export default function ProductHome(){
             width:330,
             render:(uuid)=>{
                 return(
-                    <LinkButton>{uuid}</LinkButton>
+                    <Link to={`detail/${uuid}`}><LinkButton>{uuid}</LinkButton></Link>
                 )
             }
           },
           {
             title: 'Category',
-            dataIndex: 'name',
+            dataIndex: 'category',
             width:250,
           },
           {
@@ -110,35 +125,60 @@ export default function ProductHome(){
                 )
             }
           },
+          {
+            title: 'Action',
+            dataIndex: 'uuid',
+            key: 'action',
+            width:80,
+            render:(uuid)=>(
+                <Button type='primary' icon={<EditOutlined/>} onClick={()=>handleSpuEdit(uuid)}>
+                    Edit
+                </Button>
+            )
+          },
         ];
         setColumns(columns)
     }
 
+    const handleSpuEdit=(uuid)=>{
+        setEditSpuUUID(uuid)
+        setSpuEditVisible(true)
+    }
+
     const title=(
-        <span>
-            <Select value={searchType} onChange={value=>setSearchType(value)}>
-                <Option value='searchbyname'>Search By Name</Option>
-                <Option value='searchbydes'>Search By Details</Option>
-            </Select>
-            <Input placeholder="keywords" 
-                style={{width:150,margin:'0 10px'}} 
-                value={searchName}
-                onChange={event=>setSearchName(event.target.value)}
-            />
-            <Button 
-                type='primary'
-                onClick={()=>getSpus()}
-            >Search</Button>
-        </span>
+        <PageHeader
+          ghost={false}
+          title="SPU"
+          subTitle="Product Management"
+          extra={[
+            <Button key='1' type='primary' icon={<PlusOutlined/>} onClick={()=>setSpuEditVisible(true)}>
+                Create SPU
+            </Button>
+          ]}
+        >
+          <Descriptions size="small" column={3}>
+            <Descriptions.Item>
+                <Select value={searchType} onChange={value=>setSearchType(value)}>
+                    <Option value='searchbyname'>Search By Name</Option>
+                    <Option value='searchbydes'>Search By Details</Option>
+                </Select>
+                <Input placeholder="keywords" 
+                    style={{width:150,margin:'0 10px'}} 
+                    value={searchName}
+                    onChange={event=>setSearchName(event.target.value)}
+                />
+                <Button 
+                    type='primary'
+                    onClick={()=>getSpus()}
+                    icon={<SearchOutlined />}
+                >Search</Button>
+            </Descriptions.Item>
+          </Descriptions>
+        </PageHeader>
+
     )
 
-    const extra=(
-        <Button type='primary' icon={<PlusOutlined/>} onClick={()=>setSpuEditVisible(true)}>
-            Create Spu
-        </Button>
-    )
-
-    const createSpu=async()=>{
+    const requestSpu=async()=>{
         try{
             const values=await form.validateFields()
             values["saleable"]=values["saleable"]==true?1:0
@@ -153,14 +193,27 @@ export default function ProductHome(){
             delete values["featureandbenefits"]
             delete values["description"]
             delete values["spectemplate"]
-            reqAddSpu(values)
+            if (editSpuUUID==""){
+                reqAddSpu(values)
+            }else{
+                //update spu here
+                console.log("update:",values)
+            }
             setSpuEditVisible(false)
+            setEditSpuUUID("")
             getSpus()
-        }catch(e){}
+        }catch(e){
+            console.log(e)
+        }
+    }
+
+    const handleResetDrawer=()=>{
+        setEditSpuUUID("")
+        setSpuEditVisible(false)
     }
 
     return(
-        <Card title={title} extra={extra}>
+        <Card title={title}>
             <Table 
                 rowKey='uuid'
                 bordered
@@ -168,21 +221,21 @@ export default function ProductHome(){
                 columns={columns}
             />
             <Drawer
-              title="Create Spu"
+              title={editSpuUUID==""?"Create Spu":"Edit Spu"}
               width={720}
-              onClose={()=>setSpuEditVisible(false)}
+              onClose={handleResetDrawer}
               visible={spuEditVisible}
               bodyStyle={{ paddingBottom: 80 }}
               extra={
                 <Space>
-                  <Button onClick={()=>setSpuEditVisible(false)}>Cancel</Button>
-                  <Button onClick={createSpu} type="primary">
+                  <Button onClick={handleResetDrawer}>Cancel</Button>
+                  <Button onClick={requestSpu} type="primary">
                     Submit
                   </Button>
                 </Space>
               }
             >
-                <SpuEditForm form={form}/>
+                <SpuEditForm uuid={editSpuUUID} form={form}/>
            </Drawer>
         </Card>
     )

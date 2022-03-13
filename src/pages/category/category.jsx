@@ -1,5 +1,5 @@
 import React,{useState,useEffect,useRef,useCallback} from 'react'
-import {Form,Modal,Card,Button,Table} from 'antd'
+import {Breadcrumb,Form,Modal,Card,Button,Table} from 'antd'
 import {MoreOutlined,PlusOutlined,ArrowRightOutlined} from '@ant-design/icons';
 import LinkButton from './../../components/link-button'
 import {reqCategories,
@@ -14,8 +14,10 @@ import {reqCategories,
 import AddForm from './add-form'
 import UpdateForm from './update-form'
 import {message} from 'antd'
+import {useNavigate} from 'react-router-dom';
 
 export default function Category(){
+        const navigate=useNavigate();
         const [categories,setCategories]=useState([])
         const [secCategories,setSecCategories]=useState([])
         const [thirdCategories,setThirdCategories]=useState([])
@@ -55,25 +57,6 @@ export default function Category(){
             }
             setloading(false)
         };
-        
-        const title=parentIdList.length==0?'Category':
-                parentIdList.length==1?
-                (<span>
-                    <LinkButton onClick={()=>showUpperCategories()}>First Category</LinkButton>
-                    <MoreOutlined />
-                    <span>{navCategory.join(" / ")}</span>
-                </span>):
-                (<span>
-                    <LinkButton onClick={()=>showUpperCategories()}>Second Category</LinkButton>
-                    <MoreOutlined style={{marginRight:5}} />
-                    <span>{navCategory.join(" / ")}</span>
-                </span>)
-
-        const extra=(
-        <Button icon={<PlusOutlined />} type='primary' onClick={()=>showAddCategory()}>
-            Add
-        </Button>
-        )
 
         const showQueryCategories=(category)=>{
             var newNav=[]
@@ -86,14 +69,25 @@ export default function Category(){
             setParentIdList(newParentIdList)
         }
 
-        const showUpperCategories=()=>{
+        const showUpperCategories=(step)=>{
+            console.log(step)
             var newNav=[]
             newNav=[...navCategory]
-            newNav.pop()
+            if (step==1){
+                newNav.pop()
+            }else if (step==2){
+                newNav.pop()
+                newNav.pop()
+            }
             setNavCategory(newNav)
             var newParentIdList=[]
             newParentIdList=[...parentIdList]
-            newParentIdList.pop()
+            if (step==1){
+                newParentIdList.pop()
+            }else if (step==2){
+                newParentIdList.pop()
+                newParentIdList.pop()
+            }
             setParentIdList(newParentIdList)
         }
 
@@ -174,6 +168,26 @@ export default function Category(){
             setActIdList([])
             setShowModalStatus(0)
         }
+
+        const title=parentIdList.length==0?'Category':
+                parentIdList.length==1?
+                (<span>
+                    <Breadcrumb>
+                        <Breadcrumb.Item><LinkButton onClick={()=>showUpperCategories(1)}>Home</LinkButton></Breadcrumb.Item>
+                    </Breadcrumb>
+                </span>):
+                (<span>
+                    <Breadcrumb>
+                        <Breadcrumb.Item><LinkButton onClick={()=>showUpperCategories(2)}>Home</LinkButton></Breadcrumb.Item>
+                        <Breadcrumb.Item><LinkButton onClick={()=>showUpperCategories(1)}>{navCategory[1]}</LinkButton></Breadcrumb.Item>
+                    </Breadcrumb>
+                </span>)
+
+        const extra=(
+        <Button icon={<PlusOutlined />} type='primary' onClick={()=>showAddCategory()}>
+            Add
+        </Button>
+        )
         return(
             <Card title={title} extra={extra}>
                 <Table 
