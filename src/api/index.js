@@ -33,3 +33,6 @@ export const reqSpus=(searchType,searchName)=>authajax('/api/spus',{
 })
 export const reqAddSpu=(data)=>authajax('/api/spus',data,'POST')
 
+export const reqUpdateSpu=(uuid,data)=>authajax(`/api/spus/${uuid}`,data,'PUT')
+
+export const reqReadSpu=(uuid)=>authajax(`/api/spus/${uuid}`)
