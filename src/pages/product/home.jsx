@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from 'react'
-import {Form,Card,Select,Input,Button,Icon,Table,Drawer,Space,PageHeader,Descriptions} from 'antd'
+import {Tag,Tooltip,Form,Card,Select,Input,Button,Icon,Table,Drawer,Space,PageHeader,Descriptions} from 'antd'
 import {PlusOutlined,SearchOutlined,EditOutlined} from '@ant-design/icons';
 import {reqSpus} from '../../api'
 import LinkButton from '../../components/link-button'
@@ -61,7 +61,7 @@ export default function ProductHome(){
             width:330,
             render:(uuid)=>{
                 return(
-                    <Link to={`detail/${uuid}`}><LinkButton>{uuid}</LinkButton></Link>
+                    <Tooltip title="Click Edit SKU"><Link to={`detail/${uuid}`}><LinkButton>{uuid}</LinkButton></Link></Tooltip>
                 )
             }
           },
@@ -119,9 +119,11 @@ export default function ProductHome(){
             width:100,
             render:(status)=>{
                 return(
-                  <span>
-                      <span>{status==1?"on shore":"off shore"}</span>
-                  </span>
+                  <>
+                      {
+                        <Tag color={status==1?"green":"volcano"} >{status==1?"ON SHORE":"OFF SHORE"}</Tag>
+                      }
+                  </>
                 )
             }
           },
@@ -196,8 +198,7 @@ export default function ProductHome(){
             if (editSpuUUID==""){
                 reqAddSpu(values)
             }else{
-                //update spu here
-                console.log("update:",values)
+                reqUpdateSpu(editSpuUUID,values)
             }
             setSpuEditVisible(false)
             setEditSpuUUID("")

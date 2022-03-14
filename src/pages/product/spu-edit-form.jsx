@@ -62,9 +62,39 @@ export default function SpuEditForm(props){
     }
     const getSpu=async()=>{
         if (uuid!=""){
-            console.log("edit/intialvalues")
             let result = await reqReadSpu(uuid)
-            console.log(result.data)
+            if (result.data['ct1']!=null){
+                let key=result.data['ct1']
+                setCt1(key)
+                let res=await reqSecCategories(key)
+                var list=[]
+                res.data.children.forEach(item=>{
+                    list.push(<Option key={item['uuid']}>{item['name']}</Option>);
+                })
+                setSecCategories(list)
+            }
+            if (result.data['ct2']!=null){
+                let key =result.data['ct2']
+                setCt2(key)
+                let res=await reqThirdCategories(result.data['ct1'],key)
+                var list=[]
+                res.data.children.forEach(item=>{
+                    list.push(<Option key={item['uuid']}>{item['name']}</Option>);
+                })
+                setThirdCategories(list)
+            }
+            form.setFieldsValue(
+            {
+                name:result.data['name'],
+                valid:result.data['valid']==1?true:false,
+                saleable:result.data['saleable']==1?true:false,
+                productdetails:result.data['spuDetail']['productDetails'],
+                description:result.data['spuDetail']['description'],
+                featureandbenefits:result.data['spuDetail']['featureAndBenefits'],
+                ct1:result.data['ct1'],
+                ct2:result.data['ct2'],
+                ct3:result.data['ct3'],
+            })
         }
     }
 
