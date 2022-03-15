@@ -1,22 +1,28 @@
 import React,{Component,useEffect,useState} from 'react'
-import {PageHeader,Card,List,Button,Table,Image} from 'antd'
+import {Tag,Form,Space,Drawer,PageHeader,Card,List,Button,Table,Image} from 'antd'
 import {Link,useLocation,useParams,useNavigate} from 'react-router-dom';
 import {ArrowLeftOutlined,PlusOutlined,EditOutlined} from '@ant-design/icons';
 import {reqReadSpu} from '../../api'
 import moment from 'moment';
 import LinkButton from '../../components/link-button'
+import SkuEditForm from '../../components/edit-sku/sku-edit-form.jsx'
+import {reqAddSku,reqUpdateSku} from '../../api'
+import {multiplyMoney,divideMoney} from '../../utils/parse-money'
+import {FullTimeFormat1} from '../../utils/date-format'
 
 const Item=List.Item
-const dateFormat='YYYY-MM-DD h:mm:ss a';
 
 export default function ProductDetail(props){
+    const [form]=Form.useForm()
     const navigate=useNavigate();
     const [columns,setColumns]=useState([])
     const [skus,setSkus]=useState([])
+    const [editSkuUUID,setEditSkuUUID]=useState("");
+    const [skuEditVisible,setSkuEditVisible]=useState(false);
     const [spuName,setSpuName]=useState("")
-    const {uuid}=useParams()
+    const {spuUUID}=useParams()
     const readSku=async()=>{
-        const result =await reqReadSpu(uuid)
+        const result =await reqReadSpu(spuUUID)
         result.data.skus.forEach(item=>{
             item['stockqty']=item['stock']['stockNum']
         })
@@ -52,13 +58,13 @@ export default function ProductDetail(props){
             render:(price)=>{
                 return(
                   <span>
-                      {price}
+                      {divideMoney(price)}
                   </span>
                 )
             }
           },
           {
-            title: 'Stock Qty',
+            title: 'Stock',
             dataIndex: 'stockqty',
             width:100,
           },
@@ -88,7 +94,7 @@ export default function ProductDetail(props){
             render:(date)=>{
                 return(
                   <span>
-                      {moment(date).format(dateFormat)}
+                      {moment(date).format(FullTimeFormat1)}
                   </span>
                 )
             }
@@ -100,20 +106,22 @@ export default function ProductDetail(props){
             render:(date)=>{
                 return(
                   <span>
-                      {moment(date).format(dateFormat)}
+                      {moment(date).format(FullTimeFormat1)}
                   </span>
                 )
-            }
-          },
+        }
+      },
           {
-            title: 'IsValid',
+            title: 'Enable',
             dataIndex: 'enable',
-            width:100,
+            width:60,
             render:(status)=>{
                 return(
-                  <span>
-                      <span>{status==1?"true":"false"}</span>
-                  </span>
+                  <>
+                      {
+                        <Tag color={status==1?"green":"volcano"} >{status==1?"ON":"OFF"}</Tag>
+                      }
+                  </>
                 )
             }
           },
@@ -121,15 +129,20 @@ export default function ProductDetail(props){
             title: 'Action',
             dataIndex: 'uuid',
             key: 'action',
-              width:80,
-            render:(value)=>(
-                <Button type='primary' icon={<EditOutlined/>}>
+            width:80,
+            render:(uuid)=>(
+                <Button type='primary' onClick={()=>handleSkuEdit(uuid)} icon={<EditOutlined/>}>
                     Edit
                 </Button>
             )
           },
         ];
         setColumns(columns)
+    }
+
+    const handleSkuEdit=(uuid)=>{
+        setEditSkuUUID(uuid)
+        setSkuEditVisible(true)
     }
 
     const title=(
@@ -139,13 +152,41 @@ export default function ProductDetail(props){
                 title={spuName}
                 subTitle="SPU NAME"
                 extra={[
-                    <Button key="1" type='primary' icon={<PlusOutlined/>} onClick={()=>setSpuEditVisible(true)}>
+                    <Button key="1" type='primary' icon={<PlusOutlined/>} onClick={()=>setSkuEditVisible(true)}>
                         Create SKU
                     </Button>
-
                 ]}
               />
     )
+
+    const handleResetDrawer=()=>{
+        setEditSkuUUID("")
+        setSkuEditVisible(false)
+    }
+
+    const requestSku=async()=>{
+        try{
+            const values=await form.validateFields()
+            values["stock"]={"stockNum":values["stocknum"]}
+            values["enable"]=values["enable"]==true?1:0
+            //price multiply 100
+            values["price"]=multiplyMoney(values["price"])
+            values["stock"]={"stockNum":values["stocknum"]}
+            //delete upload images for now
+            delete values["images"]
+            delete values["stocknum"]
+            if (editSkuUUID==""){
+                reqAddSku(spuUUID,values)
+            }else{
+                reqUpdateSku(spuUUID,editSkuUUID,values)
+            }
+            setEditSkuUUID("")
+            setSkuEditVisible(false)
+            readSku()
+        }catch(e){
+            console.log(e)
+        }
+    }
 
     return(
         <Card title={title} className='product-detail'>
@@ -155,6 +196,23 @@ export default function ProductDetail(props){
                 dataSource={skus}
                 columns={columns}
             />
+            <Drawer
+              title={editSkuUUID==""?"Create SKU":"Edit SKU"}
+              width={720}
+              onClose={handleResetDrawer}
+              visible={skuEditVisible}
+              bodyStyle={{ paddingBottom: 80 }}
+              extra={
+                <Space>
+                  <Button onClick={handleResetDrawer}>Cancel</Button>
+                  <Button onClick={requestSku} type="primary">
+                    Submit
+                  </Button>
+                </Space>
+              }
+            >
+                <SkuEditForm uuid={editSkuUUID} spuUUID={spuUUID} form={form}/>
+           </Drawer>
         </Card>
     )
 }
