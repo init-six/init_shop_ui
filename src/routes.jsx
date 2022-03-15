@@ -33,7 +33,7 @@ export default function Router(){
               children:[
                   {path:'',element:<ProductHome />},
                   {path:'edit',element:<ProductAddUpdate />},
-                  {path:'detail/:uuid',element:<ProductDetail />},
+                  {path:'detail/:spuUUID',element:<ProductDetail />},
                   {path:'*',element:<ProductHome />}
               ]
           },

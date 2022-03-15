@@ -5,11 +5,11 @@ import {reqSpus} from '../../api'
 import LinkButton from '../../components/link-button'
 import moment from 'moment';
 import {Link} from 'react-router-dom';
-import SpuEditForm from './spu-edit-form'
+import SpuEditForm from '../../components/edit-spu/spu-edit-form.jsx'
 import {reqAddSpu,reqUpdateSpu} from './../../api'
+import {FullTimeFormat1} from '../../utils/date-format'
 
 const Option=Select.Option
-const dateFormat='YYYY-MM-DD h:mm:ss a';
 
 export default function ProductHome(){
     const [columns,setColumns]=useState([]);
@@ -96,7 +96,7 @@ export default function ProductHome(){
             render:(date)=>{
                 return(
                   <span>
-                      {moment(date).format(dateFormat)}
+                      {moment(date).format(FullTimeFormat1)}
                   </span>
                 )
             }
@@ -108,7 +108,7 @@ export default function ProductHome(){
             render:(date)=>{
                 return(
                   <span>
-                      {moment(date).format(dateFormat)}
+                      {moment(date).format(FullTimeFormat1)}
                   </span>
                 )
             }
