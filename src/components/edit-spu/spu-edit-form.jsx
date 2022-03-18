@@ -211,7 +211,8 @@ export default function SpuEditForm(props){
         >
             <Input.TextArea rows={5} maxLength={3000} showCount placeholder="please enter url description" />
         </Item>
-          <Form.List name="spectemplate">
+        <Item label="Specification">
+          <Form.List name="spectemplate" >
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ key, name, ...restField }) => (
@@ -238,13 +239,14 @@ export default function SpuEditForm(props){
                 </Space>
               ))}
               <Item>
-                <Button type="dashed" style={{marginLeft:140}} onClick={() => add()} block icon={<PlusOutlined />}>
+                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                   Add Spec Values
                 </Button>
               </Item>
             </>
           )}
         </Form.List>
+        </Item>
       </Form>
     );
 };

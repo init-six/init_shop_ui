@@ -85,20 +85,16 @@ export default function ProductDetail(props){
                     let data=JSON.parse(specs)
                     for(var key in data){
                         list.push(
-                              `${key} : ${data[key]}`
+                            <div>
+                              {key} : {data[key]}
+                            </div>
                         )
                     }
                 }
                 return(
-                  <List
-                    bordered
-                    dataSource={list}
-                    renderItem={item => (
-                      <List.Item>
-                        {item}
-                      </List.Item>
-                    )}
-                  />
+                    <>
+                        {list}
+                    </>
                 )
             }
           },
