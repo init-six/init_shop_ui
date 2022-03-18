@@ -92,6 +92,7 @@ export default function SpuEditForm(props){
                 ct1:result.data['ct1'],
                 ct2:result.data['ct2'],
                 ct3:result.data['ct3'],
+                spectemplate:JSON.parse(result.data['spuDetail']['specTemplate']),
             })
         }
     }

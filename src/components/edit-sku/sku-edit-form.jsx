@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react';
-import {Upload,Modal,Divider,Space,InputNumber,Form,Input,Checkbox} from 'antd';
-import {PlusOutlined} from '@ant-design/icons';
-import {reqReadSku} from '../../api'
+import {Radio,Upload,Modal,Divider,Space,InputNumber,Form,Input,Checkbox} from 'antd';
+import {PlusOutlined,MinusCircleOutlined} from '@ant-design/icons';
+import {reqReadSku,reqReadSpu} from '../../api'
 import GetBase64 from '../../utils/get-base-64'
 import {divideMoney} from '../../utils/parse-money'
 
@@ -31,6 +31,7 @@ export default function SkuEditForm(props){
     const [previewVisible,setPreviewVisible]=useState(false)
     const [previewImage,setPreviewImage]=useState('')
     const [previewTitle,setPreviewTitle]=useState('')
+    const [specTemplate,setSpecTemplate]=useState([])
     const [fileList, setFileList]=useState([])
     const InitFileList =()=>{
         let initList= [
@@ -75,14 +76,43 @@ export default function SkuEditForm(props){
     }
 
     const getSku=async()=>{
+        let spuRes=await reqReadSpu(spuUUID)
+        let spec=JSON.parse(spuRes.data['spuDetail']['specTemplate'])
+        let elements=[]
+        spec.forEach((item,index)=>{
+            let list=[]
+            item['values'].forEach((v,index)=>{
+                list.push(<Radio.Button key={v} value={index}>{v}</Radio.Button>)
+            })
+            elements.push(
+                <Item 
+                    name={['spec',item['key']]} key={index} label={item['key']}
+                    rules={[{required:true,message:"Please select one"}]}
+                >
+                    <Radio.Group buttonStyle="solid">
+                        {list}
+                    </Radio.Group>
+                </Item>
+            )
+        })
+        setSpecTemplate(elements)
         if (uuid!=""&&spuUUID!=""){
             let result = await reqReadSku(spuUUID,uuid)
+            let ownspec=JSON.parse(result.data['ownSpec'])
+            let indexes=result.data['indexes'].split("_")
+            let spec={}
+            let start=0
+            for (var key in ownspec){
+                spec[key]=parseInt(indexes[start])
+                start++
+            }
             form.setFieldsValue(
             {
                 name:result.data['name'],
                 enable:result.data['enable']==1?true:false,
                 price:divideMoney(result.data['price']),
                 stocknum:result.data['stock']['stockNum'],
+                spec:spec,
             })
         }
     }
@@ -148,6 +178,9 @@ export default function SkuEditForm(props){
         </Item>
         <Item name="enable" tooltip="Offline Or Online" label="Enable" valuePropName="checked">
             <Checkbox />
+        </Item>
+        <Item label="Specification">
+        {specTemplate}
         </Item>
         <Item name="price" 
                 tooltip="only allow two decimal" label="Price">
