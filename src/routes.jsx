@@ -12,7 +12,6 @@ import Product from './pages/product/product'
 import User from './pages/user/user'
 import ProductHome from './pages/product/home'
 import ProductDetail from './pages/product/detail'
-import ProductAddUpdate from './pages/product/add-update'
 
 export default function Router(){
     let element=useRoutes([
@@ -21,24 +20,23 @@ export default function Router(){
         path:'admin',
         element:<Admin/>,
         children:[
-          {path:'home',element:<Home/>},
-          {path:'category',element:<Category />},
-          {path:'bar',element:<Bar/>},
-          {path:'line',element:<Line/>},
-          {path:'pie',element:<Pie/>},
-          {path:'order',element:<Order/>},
-          {
-              path:'product',
-              element:<Product/>,
-              children:[
-                  {path:'',element:<ProductHome />},
-                  {path:'edit',element:<ProductAddUpdate />},
-                  {path:'detail/:spuUUID',element:<ProductDetail />},
-                  {path:'*',element:<ProductHome />}
-              ]
-          },
-          {path:'user',element:<User/>},
-          {path:'*',element:<Home />}
+            {path:'home',element:<Home/>},
+            {path:'category',element:<Category />},
+            {path:'bar',element:<Bar/>},
+            {path:'line',element:<Line/>},
+            {path:'pie',element:<Pie/>},
+            {path:'order',element:<Order/>},
+            {
+                path:'product',
+                element:<Product/>,
+                children:[
+                    {path:'',element:<ProductHome />},
+                    {path:'detail/:spuUUID',element:<ProductDetail />},
+                    {path:'*',element:<ProductHome />}
+                ]
+            },
+            {path:'user',element:<User/>},
+            {path:'*',element:<Home />}
         ]
       },
       //redirect {path:"home",redirectTo:'/'} 

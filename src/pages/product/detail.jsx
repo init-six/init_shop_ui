@@ -21,8 +21,15 @@ export default function ProductDetail(props){
     const [skuEditVisible,setSkuEditVisible]=useState(false);
     const [spuName,setSpuName]=useState("")
     const {spuUUID}=useParams()
+    const [spuSpecTemplate,setSpuSpecTemplate]=useState({})
     const readSku=async()=>{
         const result =await reqReadSpu(spuUUID)
+        var spec={}
+        let temp=JSON.parse(result.data.spuDetail.specTemplate)
+        temp.forEach(item=>{
+            spec[item['key']]=item['values']
+        })
+        setSpuSpecTemplate(spec)
         result.data.skus.forEach(item=>{
             item['stockqty']=item['stock']['stockNum']
         })
@@ -167,13 +174,20 @@ export default function ProductDetail(props){
     const requestSku=async()=>{
         try{
             const values=await form.validateFields()
+            let indexes=[]
+            let own_spec={}
+            for (var key in values['spec']){
+                indexes.push(values['spec'][key])
+                own_spec[key]=spuSpecTemplate[key][values['spec'][key]]
+            }
+            values["indexes"]=indexes.join("_")
+            values["ownspec"]=JSON.stringify(own_spec)
             values["stock"]={"stockNum":values["stocknum"]}
             values["enable"]=values["enable"]==true?1:0
             //price multiply 100
             values["price"]=multiplyMoney(values["price"])
             values["stock"]={"stockNum":values["stocknum"]}
             //delete upload images for now
-            delete values["images"]
             delete values["stocknum"]
             if (editSkuUUID==""){
                 reqAddSku(spuUUID,values)
