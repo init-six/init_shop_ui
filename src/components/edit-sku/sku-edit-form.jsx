@@ -77,34 +77,41 @@ export default function SkuEditForm(props){
 
     const getSku=async()=>{
         let spuRes=await reqReadSpu(spuUUID)
-        let spec=JSON.parse(spuRes.data['spuDetail']['specTemplate'])
-        let elements=[]
-        spec.forEach((item,index)=>{
-            let list=[]
-            item['values'].forEach((v,index)=>{
-                list.push(<Radio.Button key={v} value={index}>{v}</Radio.Button>)
+
+        if (spuRes.data['spuDetail']['specTemplate']!=""){
+            let spec=JSON.parse(spuRes.data['spuDetail']['specTemplate'])
+            let elements=[]
+            spec.forEach((item,index)=>{
+                let list=[]
+                item['values'].forEach((v,index)=>{
+                    list.push(<Radio.Button key={v} value={index}>{v}</Radio.Button>)
+                })
+                elements.push(
+                    <Item 
+                        name={['spec',item['key']]} key={index} label={item['key']}
+                        rules={[{required:true,message:"Please select one"}]}
+                    >
+                        <Radio.Group buttonStyle="solid">
+                            {list}
+                        </Radio.Group>
+                    </Item>
+                )
             })
-            elements.push(
-                <Item 
-                    name={['spec',item['key']]} key={index} label={item['key']}
-                    rules={[{required:true,message:"Please select one"}]}
-                >
-                    <Radio.Group buttonStyle="solid">
-                        {list}
-                    </Radio.Group>
-                </Item>
-            )
-        })
-        setSpecTemplate(elements)
+            setSpecTemplate(elements)
+        }
+
         if (uuid!=""&&spuUUID!=""){
             let result = await reqReadSku(spuUUID,uuid)
-            let ownspec=JSON.parse(result.data['ownSpec'])
-            let indexes=result.data['indexes'].split("_")
-            let spec={}
-            let start=0
-            for (var key in ownspec){
-                spec[key]=parseInt(indexes[start])
-                start++
+            if (result.data['ownSpec']!=""){
+                let ownspec=JSON.parse(result.data['ownSpec'])
+                let indexes=result.data['indexes'].split("_")
+                let spec={}
+                let start=0
+                for (var key in ownspec){
+                    spec[key]=parseInt(indexes[start])
+                    start++
+                }
+                form.setFieldsValue({spec:spec})
             }
             form.setFieldsValue(
             {
@@ -112,7 +119,6 @@ export default function SkuEditForm(props){
                 enable:result.data['enable']==1?true:false,
                 price:divideMoney(result.data['price']),
                 stocknum:result.data['stock']['stockNum'],
-                spec:spec,
             })
         }
     }
@@ -179,9 +185,11 @@ export default function SkuEditForm(props){
         <Item name="enable" tooltip="Offline Or Online" label="Enable" valuePropName="checked">
             <Checkbox />
         </Item>
-        <Item label="Specification">
-        {specTemplate}
-        </Item>
+        {specTemplate.length!=0?
+            <Item label="Specification">
+            {specTemplate}
+            </Item>:null
+        }
         <Item name="price" 
                 tooltip="only allow two decimal" label="Price">
                 <InputNumber

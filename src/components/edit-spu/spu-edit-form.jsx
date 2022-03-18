@@ -59,6 +59,7 @@ export default function SpuEditForm(props){
         setCategories(list)
     }
     const getSpu=async()=>{
+        form.resetFields()
         if (uuid!=""){
             let result = await reqReadSpu(uuid)
             if (result.data['ct1']!=null){
@@ -92,8 +93,12 @@ export default function SpuEditForm(props){
                 ct1:result.data['ct1'],
                 ct2:result.data['ct2'],
                 ct3:result.data['ct3'],
-                spectemplate:JSON.parse(result.data['spuDetail']['specTemplate']),
             })
+            if (result.data['spuDetail']['specTemplate']!=""){
+                form.setFieldsValue({
+                    spectemplate:JSON.parse(result.data['spuDetail']['specTemplate'])
+                })
+            }
         }
     }
 

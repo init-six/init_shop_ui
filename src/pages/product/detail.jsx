@@ -1,5 +1,5 @@
 import React,{Component,useEffect,useState} from 'react'
-import {Tag,Form,Space,Drawer,PageHeader,Card,List,Button,Table,Image} from 'antd'
+import {Descriptions,Tag,Form,Space,Drawer,PageHeader,Card,List,Button,Table,Image} from 'antd'
 import {Link,useLocation,useParams,useNavigate} from 'react-router-dom';
 import {ArrowLeftOutlined,PlusOutlined,EditOutlined} from '@ant-design/icons';
 import {reqReadSpu} from '../../api'
@@ -24,12 +24,14 @@ export default function ProductDetail(props){
     const [spuSpecTemplate,setSpuSpecTemplate]=useState({})
     const readSku=async()=>{
         const result =await reqReadSpu(spuUUID)
-        var spec={}
-        let temp=JSON.parse(result.data.spuDetail.specTemplate)
-        temp.forEach(item=>{
-            spec[item['key']]=item['values']
-        })
-        setSpuSpecTemplate(spec)
+        if (result.data.spuDetail.specTemplate!=""){
+            var spec={}
+            let temp=JSON.parse(result.data.spuDetail.specTemplate)
+            temp.forEach(item=>{
+                spec[item['key']]=item['values']
+            })
+            setSpuSpecTemplate(spec)
+        }
         result.data.skus.forEach(item=>{
             item['stockqty']=item['stock']['stockNum']
         })
@@ -59,23 +61,6 @@ export default function ProductDetail(props){
             width:200,
           },
           {
-            title: 'Price $',
-            dataIndex: 'price',
-            width:100,
-            render:(price)=>{
-                return(
-                  <span>
-                      {divideMoney(price)}
-                  </span>
-                )
-            }
-          },
-          {
-            title: 'Stock',
-            dataIndex: 'stockqty',
-            width:100,
-          },
-          {
             title: 'Image',
             dataIndex: 'image',
             render:(images)=>{
@@ -91,8 +76,48 @@ export default function ProductDetail(props){
             }
           },
           {
-            title: 'Spec',
+            title: 'Specification',
             dataIndex: 'ownSpec',
+            width:300,
+            render:(specs)=>{
+                let list=[]
+                if (specs!=""){
+                    let data=JSON.parse(specs)
+                    for(var key in data){
+                        list.push(
+                              `${key} : ${data[key]}`
+                        )
+                    }
+                }
+                return(
+                  <List
+                    bordered
+                    dataSource={list}
+                    renderItem={item => (
+                      <List.Item>
+                        {item}
+                      </List.Item>
+                    )}
+                  />
+                )
+            }
+          },
+          {
+            title: 'Price $',
+            dataIndex: 'price',
+            width:100,
+            render:(price)=>{
+                return(
+                  <span>
+                      {divideMoney(price)}
+                  </span>
+                )
+            }
+          },
+          {
+            title: 'Stock',
+            dataIndex: 'stockqty',
+            width:100,
           },
           {
             title: 'Update Date',
