@@ -25,12 +25,21 @@ export default function authajax(url,data={},type='GET'){
           'Authorization':`Bearer ${getAccessToken()}`
         }
       })
+    }else if (type=='DELETE'){
+      promise=axios.delete(url,{
+        headers:{
+          'Authorization':`Bearer ${getAccessToken()}`
+        },
+        data:data,
+      })
     }
 
     promise.then(response=>{
       resolve(response)
     }).catch(error=>{
-      if (error.response){
+      if (error.response.status==400){
+        message.error(error.response.data)
+      }else if (error.response){
         message.error(error.response.status+" "+error.response.data)
       }else if (error.request){
         message.error("request:"+error.request)
