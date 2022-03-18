@@ -10,7 +10,11 @@ import {reqCategories,
         reqUpdateThirdCategory,
         reqAddCategory,
         reqAddSecCategory,
-        reqAddThirdCategory} from '../../api'
+        reqAddThirdCategory,
+        reqDeleteCategory,
+        reqDeleteSecCategory,
+        reqDeleteThirdCategory,
+} from '../../api'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
 import {message} from 'antd'
@@ -111,6 +115,7 @@ export default function Category(){
                     <LinkButton onClick={()=>showUpdateCategory(category)}>Update</LinkButton>
                     {parentIdList.length<=1?
                         <LinkButton onClick={()=>showQueryCategories(category)}>View</LinkButton>:null}
+                    <LinkButton onClick={()=>handleDeleteCategory(category)}>Delete</LinkButton>
                 </span>
             )
           },
@@ -119,6 +124,19 @@ export default function Category(){
         const showAddCategory=()=>{
             setShowModalStatus(1)
         }
+
+        const handleDeleteCategory= async (category)=>{
+            if (parentIdList.length==0){
+                await reqDeleteCategory(category.uuid)
+            }else if (parentIdList.length==1){
+                await reqDeleteSecCategory(parentIdList[0],category.uuid)
+            }else{
+                await reqDeleteThirdCategory(parentIdList[1],category.uuid)
+            }
+            form.resetFields()
+            getCategories()
+        }
+
         const showUpdateCategory=(category)=>{
             setActCategory(category.name)
             var newParentIdList=[]
