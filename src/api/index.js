@@ -44,10 +44,14 @@ export const reqUpdateSpu=(uuid,data)=>authajax(`/api/spus/${uuid}`,data,'PUT')
 
 export const reqReadSpu=(uuid)=>authajax(`/api/spus/${uuid}`)
 
+export const reqDeleteSpu=(uuid)=>authajax(`/api/spus/${uuid}`,{},'DELETE')
+
 //sku
 export const reqAddSku=(spuUUID,data)=>authajax(`/api/spus/${spuUUID}/skus`,data,'POST')
 
 export const reqUpdateSku=(spuUUID,uuid,data)=>authajax(`/api/spus/${spuUUID}/skus/${uuid}`,data,'PUT')
 
 export const reqReadSku=(spuUUID,uuid)=>authajax(`/api/spus/${spuUUID}/skus/${uuid}`)
+
+export const reqDeleteSku=(spuUUID,uuid)=>authajax(`/api/spus/${spuUUID}/skus/${uuid}`,{},'DELETE')
 

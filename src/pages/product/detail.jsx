@@ -1,8 +1,8 @@
 import React,{Component,useEffect,useState} from 'react'
-import {Descriptions,Tag,Form,Space,Drawer,PageHeader,Card,List,Button,Table,Image} from 'antd'
+import {Modal,Descriptions,Tag,Form,Space,Drawer,PageHeader,Card,List,Button,Table,Image} from 'antd'
 import {Link,useLocation,useParams,useNavigate} from 'react-router-dom';
-import {ArrowLeftOutlined,PlusOutlined,EditOutlined} from '@ant-design/icons';
-import {reqReadSpu} from '../../api'
+import {ExclamationCircleOutlined,ArrowLeftOutlined,PlusOutlined,EditOutlined} from '@ant-design/icons';
+import {reqReadSpu,reqDeleteSku} from '../../api'
 import moment from 'moment';
 import LinkButton from '../../components/link-button'
 import SkuEditForm from '../../components/edit-sku/sku-edit-form.jsx'
@@ -11,6 +11,8 @@ import {multiplyMoney,divideMoney} from '../../utils/parse-money'
 import {FullTimeFormat1} from '../../utils/date-format'
 
 const Item=List.Item
+
+const {confirm}=Modal
 
 export default function ProductDetail(props){
     const [form]=Form.useForm()
@@ -85,7 +87,7 @@ export default function ProductDetail(props){
                     let data=JSON.parse(specs)
                     for(var key in data){
                         list.push(
-                            <div>
+                            <div key={key}>
                               {key} : {data[key]}
                             </div>
                         )
@@ -223,6 +225,24 @@ export default function ProductDetail(props){
         }
     }
 
+    const handleDeleteSku=(uuid)=>{
+          confirm({
+            title: 'Do you Want to delete this sku?',
+            icon: <ExclamationCircleOutlined />,
+            content: 'delete sku',
+            async onOk() {
+                await reqDeleteSku(spuUUID,uuid)
+                setEditSkuUUID("")
+                setSkuEditVisible(false)
+                readSku()
+            },
+            onCancel() {
+                setEditSkuUUID("")
+                setSkuEditVisible(false)
+            },
+          });
+    }
+
     return(
         <Card title={title} className='product-detail'>
             <Table 
@@ -244,6 +264,12 @@ export default function ProductDetail(props){
                     Submit
                   </Button>
                 </Space>
+              }
+              footer={
+                  editSkuUUID!=""?
+                  <Button onClick={()=>handleDeleteSku(editSkuUUID)}style={{float:'right'}} type="primary" danger>
+                      Delete
+                  </Button>:null
               }
             >
                 <SkuEditForm uuid={editSkuUUID} spuUUID={spuUUID} form={form}/>
