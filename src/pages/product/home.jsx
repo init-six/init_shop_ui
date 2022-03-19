@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react'
-import {Tag,Tooltip,Form,Card,Select,Input,Button,Icon,Table,Drawer,Space,PageHeader,Descriptions} from 'antd'
-import {PlusOutlined,SearchOutlined,EditOutlined} from '@ant-design/icons';
-import {reqSpus} from '../../api'
+import {Modal,Tag,Tooltip,Form,Card,Select,Input,Button,Icon,Table,Drawer,Space,PageHeader,Descriptions} from 'antd'
+import {PlusOutlined,SearchOutlined,EditOutlined,ExclamationCircleOutlined} from '@ant-design/icons';
+import {reqSpus,reqDeleteSpu} from '../../api'
 import LinkButton from '../../components/link-button'
 import moment from 'moment';
 import {Link} from 'react-router-dom';
@@ -10,6 +10,7 @@ import {reqAddSpu,reqUpdateSpu} from './../../api'
 import {FullTimeFormat1} from '../../utils/date-format'
 
 const Option=Select.Option
+const {confirm}=Modal
 
 export default function ProductHome(){
     const [columns,setColumns]=useState([]);
@@ -213,6 +214,24 @@ export default function ProductHome(){
         setSpuEditVisible(false)
     }
 
+    const handleDeleteSpu=(uuid)=>{
+          confirm({
+            title: 'Do you Want to delete this spu with skus?',
+            icon: <ExclamationCircleOutlined />,
+            content: 'delete spu with all skus',
+            async onOk() {
+                await reqDeleteSpu(uuid)
+                setSpuEditVisible(false)
+                setEditSpuUUID("")
+                getSpus()
+            },
+            onCancel() {
+                setSpuEditVisible(false)
+                setEditSpuUUID("")
+            },
+          });
+    }
+
     return(
         <Card title={title}>
             <Table 
@@ -234,6 +253,12 @@ export default function ProductHome(){
                     Submit
                   </Button>
                 </Space>
+              }
+              footer={
+                  editSpuUUID!=""?
+                  <Button onClick={()=>handleDeleteSpu(editSpuUUID)}style={{float:'right'}} type="primary" danger>
+                      Delete
+                  </Button>:null
               }
             >
                 <SpuEditForm uuid={editSpuUUID} form={form}/>
