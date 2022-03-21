@@ -49,11 +49,11 @@ export default function ProductDetail(props){
         const columns = [
           {
             title: 'SKU ID',
-            dataIndex: 'uuid',
-            width:330,
-            render:(uuid)=>{
+            dataIndex: 'id',
+            width:200,
+            render:(id)=>{
                 return(
-                    <span>{uuid}</span>
+                    <span>{id}</span>
                 )
             }
           },
