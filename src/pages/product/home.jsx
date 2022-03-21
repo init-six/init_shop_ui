@@ -58,11 +58,11 @@ export default function ProductHome(){
         const columns = [
           {
             title: 'SPU ID',
-            dataIndex: 'uuid',
-            width:330,
-            render:(uuid)=>{
+            dataIndex: 'id',
+            width:200,
+            render:(text,record)=>{
                 return(
-                    <Tooltip title="Click Edit SKU"><Link to={`detail/${uuid}`}><LinkButton>{uuid}</LinkButton></Link></Tooltip>
+                    <Tooltip title="Click Edit SKU"><Link to={`detail/${record.uuid}`}><LinkButton>{record.id}</LinkButton></Link></Tooltip>
                 )
             }
           },
